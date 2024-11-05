@@ -6,6 +6,8 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.Match" %>
+<%@ page import="java.util.List" %>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -30,8 +32,8 @@
         </div>
         <div>
             <nav class="nav-links">
-                <a class="nav-link" href="#">Home</a>
-                <a class="nav-link" href="#">Matches</a>
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="matches">Matches</a>
             </nav>
         </div>
     </section>
@@ -54,31 +56,17 @@
                 <th>Player Two</th>
                 <th>Winner</th>
             </tr>
+            <%
+                for (Match match : (List<Match>) session.getAttribute("matches")) {
+            %>
             <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
+                <td><%= match.getPlayerOne().getName() %></td>
+                <td><%= match.getPlayerTwo().getName() %></td>
+                <td><span class="winner-name-td"><%= match.getWinner().getName() %></span></td>
             </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Roger Federer</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Roger Federer</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
-            </tr>
+            <%
+                }
+            %>
         </table>
 
         <div class="pagination">
