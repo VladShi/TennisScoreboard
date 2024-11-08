@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface MatchDao {
 
-    List<Match> getAll();
+    List<Match> findAllByFilter(String name, int from, int pageSize);
+
+    long countByFilter(String name);
 }

@@ -11,15 +11,15 @@ public class Match {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_one_id", referencedColumnName = "id")
     private Player playerOne;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_two_id", referencedColumnName = "id")
     private Player playerTwo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winner_id", referencedColumnName = "id")
     private Player winner;
 

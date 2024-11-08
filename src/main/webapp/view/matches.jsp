@@ -8,6 +8,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.Match" %>
 <%@ page import="java.util.List" %>
+
+<%
+    String playerName = (String) session.getAttribute("playerName");
+    List<Match> matches = (List<Match>) session.getAttribute("matches");
+    int pageNumber = (int) session.getAttribute("pageNumber");
+    int lastPageNumber = (int) session.getAttribute("lastPageNumber");
+    List<Integer> pageNumberRange = (List<Integer>) session.getAttribute("pageNumberRange");
+    session.invalidate();
+%>
+
 <html>
 <head>
     <meta charset="UTF-8">
@@ -42,9 +52,12 @@
     <div class="container">
         <h1>Matches</h1>
         <div class="input-container">
-            <input class="input-filter" placeholder="Filter by name" type="text" />
+            <form style="width: 100%" action="?" method="GET">
+                <input class="input-filter" placeholder="<%= playerName.isBlank() ? "Filter by name": "" %>" type="text" name="filter_by_player_name" value="<%= !playerName.isBlank() ? playerName : "" %>"/>
+                <input type="submit" hidden />
+            </form>
             <div>
-                <a href="#">
+                <a href="matches">
                     <button class="btn-filter">Reset Filter</button>
                 </a>
             </div>
@@ -57,7 +70,7 @@
                 <th>Winner</th>
             </tr>
             <%
-                for (Match match : (List<Match>) session.getAttribute("matches")) {
+                for (Match match : matches) {
             %>
             <tr>
                 <td><%= match.getPlayerOne().getName() %></td>
@@ -70,11 +83,21 @@
         </table>
 
         <div class="pagination">
-            <a class="prev" href="#"> < </a>
-            <a class="num-page current" href="#">1</a>
-            <a class="num-page" href="#">2</a>
-            <a class="num-page" href="#">3</a>
-            <a class="next" href="#"> > </a>
+            <a class="prev" href="?page=1&filter_by_player_name=<%= playerName.isBlank() ? "" : playerName %>"> < </a>
+            <%
+                for (int number : pageNumberRange) {
+                    if (number == pageNumber) {
+            %>
+            <span class="num-page current"><%= number %></span>
+            <%
+                    } else {
+            %>
+            <a class="num-page" href="?page=<%= number %>&filter_by_player_name=<%= playerName.isBlank() ? "" : playerName %>"><%= number %></a>
+            <%
+                    }
+                }
+            %>
+            <a class="next" href="?page=<%= lastPageNumber %>&filter_by_player_name=<%= playerName.isBlank() ? "" : playerName %>"> > </a>
         </div>
     </div>
 </main>
