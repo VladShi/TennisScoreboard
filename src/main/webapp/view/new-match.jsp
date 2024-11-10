@@ -6,6 +6,13 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    String errorMessage = (String) session.getAttribute("errorMessage");
+    String playerOneName = (String) session.getAttribute("playerOneName");
+    String playerTwoName = (String) session.getAttribute("playerTwoName");
+    session.invalidate();
+%>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -29,8 +36,8 @@
         </div>
         <div>
             <nav class="nav-links">
-                <a class="nav-link" href="#">Home</a>
-                <a class="nav-link" href="#">Matches</a>
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="matches">Matches</a>
             </nav>
         </div>
     </section>
@@ -41,16 +48,22 @@
             <h1>Start new match</h1>
             <div class="new-match-image"></div>
             <div class="form-container center">
-                <form method="post" action="#">
-                    <p style="color: red;">Sample error message</p>
+                <form method="post" action="">
+                    <% if  (errorMessage != null && !errorMessage.isEmpty()) { %>
+                        <p style="color: red;"> <%= errorMessage %> </p>
+                    <% } else { %>
+                        <p> &nbsp </p>
+                    <% } %>
                     <label class="label-player" for="playerOne">Player one</label>
-                    <input class="input-player" placeholder="Name" type="text" id="playerOne"
-                           name="playerOne" pattern="[A-Za-z]\. [A-Za-z]+" required
-                           title="Enter a name in the format n. surname ">
+                    <input class="input-player" placeholder="<%= playerOneName == null ? "Name" : "" %>" type="text"
+                           id="playerOne" value="<%= playerOneName != null ? playerOneName : "" %>"
+                           name="playerOne" pattern="[a-zA-Z\s.'-]+" required
+                           title="This field only accepts English letters, space, and the following characters: ' . -">
                     <label class="label-player" for="playerTwo">Player two</label>
-                    <input class="input-player" placeholder="Name" type="text" id="playerTwo"
-                           name="playerTwo" pattern="[A-Za-z]\. [A-Za-z]+" required
-                           title="Enter a name in the format n. surname ">
+                    <input class="input-player" placeholder="<%= playerTwoName == null ? "Name" : "" %>" type="text"
+                           id="playerTwo" value="<%= playerTwoName != null ? playerTwoName : "" %>"
+                           name="playerTwo" pattern="[a-zA-Z\s.'-]+" required
+                           title="This field only accepts English letters, space, and the following characters: ' . -">
                     <input class="form-button" type="submit" value="Start">
                 </form>
             </div>
