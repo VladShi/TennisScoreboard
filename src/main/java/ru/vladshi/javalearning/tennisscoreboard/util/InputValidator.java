@@ -49,8 +49,8 @@ public class InputValidator {
             return "The name must not be empty";
         }
         name = name.strip();
-        if (name.length() < 3 || name.length() > 35) {
-            return "The name must be from 3 to 35 characters long";
+        if (name.length() < 3 || name.length() > 30) {
+            return "The name must be from 3 to 30 characters long";
         }
         if (!name.matches("[a-zA-Z\\s.'-]+")) {
             return "Only English letters, space and \". ' -\" characters are allowed";

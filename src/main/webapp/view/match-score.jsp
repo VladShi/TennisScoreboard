@@ -6,6 +6,11 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.MatchScore" %>
+<%@ page import="java.util.Optional" %>
+<%
+    Optional<MatchScore> matchScoreOptional = (Optional<MatchScore>) session.getAttribute("matchScore");
+%>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -32,8 +37,8 @@
         </div>
         <div>
             <nav class="nav-links">
-                <a class="nav-link" href="#">Home</a>
-                <a class="nav-link" href="#">Matches</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/matches">Matches</a>
             </nav>
         </div>
     </section>
@@ -43,6 +48,9 @@
         <h1>Current match</h1>
         <div class="current-match-image"></div>
         <section class="score">
+            <% if (matchScoreOptional.isPresent()) {
+                MatchScore matchScore = matchScoreOptional.get();
+            %>
             <table class="table">
                 <thead class="result">
                 <tr>
@@ -54,25 +62,28 @@
                 </thead>
                 <tbody>
                 <tr class="player1">
-                    <td class="table-text">Rafael Nadal</td>
-                    <td class="table-text">2</td>
-                    <td class="table-text">4</td>
-                    <td class="table-text">40</td>
+                    <td class="table-text"><%= matchScore.playerOne.getName() %></td>
+                    <td class="table-text"><%= matchScore.playerOneScore.set %></td>
+                    <td class="table-text"><%= matchScore.playerOneScore.game %></td>
+                    <td class="table-text"><%= matchScore.playerOneScore.point.value %></td>
                     <td class="table-text">
                         <div class="score-btn">Score</div>
                     </td>
                 </tr>
                 <tr class="player2">
-                    <td class="table-text">Roger Federer</td>
-                    <td class="table-text">2</td>
-                    <td class="table-text">3</td>
-                    <td class="table-text">15</td>
+                    <td class="table-text"><%= matchScore.playerTwo.getName() %></td>
+                    <td class="table-text"><%= matchScore.playerTwoScore.set %></td>
+                    <td class="table-text"><%= matchScore.playerTwoScore.game %></td>
+                    <td class="table-text"><%= matchScore.playerTwoScore.point.value %></td>
                     <td class="table-text">
                         <div class="score-btn">Score</div>
                     </td>
                 </tr>
                 </tbody>
             </table>
+            <% } else { %>
+            <p style="color: red">Requested match was not found.</p>
+            <% } %>
         </section>
     </div>
 </main>

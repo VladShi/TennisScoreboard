@@ -6,18 +6,18 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import ru.vladshi.javalearning.tennisscoreboard.Entities.Player;
-import ru.vladshi.javalearning.tennisscoreboard.services.PlayerService;
-import ru.vladshi.javalearning.tennisscoreboard.services.PlayerServiceImpl;
+import ru.vladshi.javalearning.tennisscoreboard.services.OngoingMatchesService;
+import ru.vladshi.javalearning.tennisscoreboard.services.OngoingMatchesServiceImpl;
 import ru.vladshi.javalearning.tennisscoreboard.util.InputValidator;
 import ru.vladshi.javalearning.tennisscoreboard.util.StringUtil;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @WebServlet("/new-match")
 public class NewMatchServlet extends HttpServlet {
 
-    private final PlayerService playerService = PlayerServiceImpl.INSTANCE;
+    private final OngoingMatchesService ongoingMatchesService = OngoingMatchesServiceImpl.INSTANCE;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -33,20 +33,18 @@ public class NewMatchServlet extends HttpServlet {
 
         String errorMessage = InputValidator.validatePlayers(playerOneName, playerTwoName);
         if (!errorMessage.isEmpty()) {
-            HttpSession httpSession = req.getSession();
-            httpSession.setAttribute("errorMessage", errorMessage);
-            httpSession.setAttribute("playerOneName", playerOneName);
-            httpSession.setAttribute("playerTwoName", playerTwoName);
+            HttpSession session = req.getSession();
+            session.setAttribute("errorMessage", errorMessage);
+            session.setAttribute("playerOneName", playerOneName);
+            session.setAttribute("playerTwoName", playerTwoName);
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             req.getRequestDispatcher("/view/new-match.jsp").forward(req, resp);
         } else {
             playerOneName = StringUtil.capitalize(playerOneName);
             playerTwoName = StringUtil.capitalize(playerTwoName);
 
-            Player playerOne = playerService.getOrSaveByName(playerOneName);
-            Player playerTwo = playerService.getOrSaveByName(playerTwoName);
-            // TODO создать матч с игроками, положить в коллекцию матчей с ключом uuid, перенаправить на match-score
-            //  с get параметром uuid
+            UUID uuid = ongoingMatchesService.addNewMatchScore(playerOneName, playerTwoName);
+            resp.sendRedirect("match-score?uuid=" + uuid.toString());
         }
     }
 }
