@@ -43,5 +43,6 @@ public class MatchScoreServlet extends HttpServlet {
         req.getSession().setAttribute("matchScore", matchScoreOptional);
         req.getSession().setAttribute("uuid", matchUuid);
         req.getRequestDispatcher("view/match-score.jsp").forward(req, resp); // TODO сделать отображение законченного матча.
+        // TODO ExceptionHandler надо бы ещё
     }
 }

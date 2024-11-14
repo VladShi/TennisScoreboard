@@ -26,25 +26,4 @@ public enum MatchesServiceImpl implements MatchesService {
         int additionForRemainder = (countResults % pageSize) > 0 ? 1 : 0;
         return countResults / pageSize + additionForRemainder;
     }
-
-    @Override
-    public List<Integer> getPageNumberRange(int currentPage, int lastPageNumber, int maxCount) {
-        LinkedList<Integer> list = new LinkedList<>();
-        list.add(currentPage);
-        for (int i = 1; i <= maxCount; i++) {
-            int previousPage = currentPage - i;
-            if (previousPage > 0)
-                list.addFirst(previousPage);
-            if (list.size() >= maxCount) {
-                break;
-            }
-            int nextPage = currentPage + i;
-            if (nextPage <= lastPageNumber)
-                list.addLast(nextPage);
-            if (list.size() >= maxCount) {
-                break;
-            }
-        }
-        return list;
-    }
 }

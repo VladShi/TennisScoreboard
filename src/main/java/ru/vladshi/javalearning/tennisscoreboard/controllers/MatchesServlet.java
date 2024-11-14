@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import ru.vladshi.javalearning.tennisscoreboard.services.MatchesService;
 import ru.vladshi.javalearning.tennisscoreboard.services.MatchesServiceImpl;
 import ru.vladshi.javalearning.tennisscoreboard.util.InputValidator;
+import ru.vladshi.javalearning.tennisscoreboard.util.PaginationUtil;
 
 import java.io.IOException;
 
@@ -33,7 +34,7 @@ public class MatchesServlet extends HttpServlet {
                 matchesService.getListOfMatches(filterByPlayerName, pageNumber, PAGE_SIZE));
         httpSession.setAttribute("lastPageNumber", lastPageNumber);
         httpSession.setAttribute("pageNumberRange",
-                matchesService.getPageNumberRange(pageNumber, lastPageNumber, PAGINATION_LINKS_MAX_NUMBER));
+                PaginationUtil.getPageNumberRange(pageNumber, lastPageNumber, PAGINATION_LINKS_MAX_NUMBER));
         httpSession.setAttribute("playerName", filterByPlayerName);
         httpSession.setAttribute("pageNumber", pageNumber);
 
