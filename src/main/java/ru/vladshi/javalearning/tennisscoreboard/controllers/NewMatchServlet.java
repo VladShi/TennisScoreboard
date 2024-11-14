@@ -44,7 +44,7 @@ public class NewMatchServlet extends HttpServlet {
             playerTwoName = StringUtil.capitalize(playerTwoName);
 
             UUID uuid = ongoingMatchesService.addNewMatchScore(playerOneName, playerTwoName);
-            resp.sendRedirect("match-score?uuid=" + uuid.toString());
+            resp.sendRedirect(String.format("%s/match-score?uuid=%s", req.getContextPath(), uuid.toString()));
         }
     }
 }

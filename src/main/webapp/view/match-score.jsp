@@ -6,8 +6,9 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.MatchScore" %>
+<%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.MatchScore" %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="static ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.PlayerOrdinal.*" %>
 <%
     Optional<MatchScore> matchScoreOptional = (Optional<MatchScore>) session.getAttribute("matchScore");
 %>
@@ -50,6 +51,7 @@
         <section class="score">
             <% if (matchScoreOptional.isPresent()) {
                 MatchScore matchScore = matchScoreOptional.get();
+                boolean hasSetTiebreak = matchScore.sets.getLast().hasTiebreak;
             %>
             <table class="table">
                 <thead class="result">
@@ -57,26 +59,36 @@
                     <th class="table-text">Player</th>
                     <th class="table-text">Sets</th>
                     <th class="table-text">Games</th>
-                    <th class="table-text">Points</th>
+                    <th class="table-text" <% if(hasSetTiebreak) { %>style="background-color: #e7e7e7; font-weight: bold"<% } %> > <%= hasSetTiebreak ? "Tiebreak" : "Points" %></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr class="player1">
                     <td class="table-text"><%= matchScore.playerOne.getName() %></td>
-                    <td class="table-text"><%= matchScore.playerOneScore.set %></td>
-                    <td class="table-text"><%= matchScore.playerOneScore.game %></td>
-                    <td class="table-text"><%= matchScore.playerOneScore.point.value %></td>
+                    <td class="table-text"><%= matchScore.getScore(PLAYER_ONE) %></td>
+                    <td class="table-text"><%= matchScore.sets.getLast().getScore(PLAYER_ONE) %></td>
+                    <td class="table-text" <% if(hasSetTiebreak) { %>style="background-color: #e7e7e7; font-weight: bold"<% } %>><%= hasSetTiebreak ?
+                            matchScore.sets.getLast().tiebreak.getScore(PLAYER_ONE)
+                            : matchScore.sets.getLast().games.getLast().getScore(PLAYER_ONE).value %></td>
                     <td class="table-text">
-                        <div class="score-btn">Score</div>
+                        <form method="post" action="">
+                            <input hidden name="playerOrdinal" value="playerOne">
+                            <input class="score-btn" style="width:90%;" type="submit" value="Score">
+                        </form>
                     </td>
                 </tr>
                 <tr class="player2">
                     <td class="table-text"><%= matchScore.playerTwo.getName() %></td>
-                    <td class="table-text"><%= matchScore.playerTwoScore.set %></td>
-                    <td class="table-text"><%= matchScore.playerTwoScore.game %></td>
-                    <td class="table-text"><%= matchScore.playerTwoScore.point.value %></td>
+                    <td class="table-text"><%= matchScore.getScore(PLAYER_TWO) %></td>
+                    <td class="table-text"><%= matchScore.sets.getLast().getScore(PLAYER_TWO) %></td>
+                    <td class="table-text" <% if(hasSetTiebreak) { %>style="background-color: #e7e7e7; font-weight: bold"<% } %>><%= hasSetTiebreak ?
+                            matchScore.sets.getLast().tiebreak.getScore(PLAYER_TWO)
+                            : matchScore.sets.getLast().games.getLast().getScore(PLAYER_TWO).value %></td>
                     <td class="table-text">
-                        <div class="score-btn">Score</div>
+                        <form method="post" action="">
+                            <input hidden name="playerOrdinal" value="playerTwo">
+                            <input class="score-btn" style="width:90%;" type="submit" value="Score">
+                        </form>
                     </td>
                 </tr>
                 </tbody>

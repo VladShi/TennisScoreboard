@@ -1,6 +1,6 @@
 package ru.vladshi.javalearning.tennisscoreboard.services;
 
-import ru.vladshi.javalearning.tennisscoreboard.Entities.MatchScore;
+import ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.MatchScore;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package ru.vladshi.javalearning.tennisscoreboard.Entities;
+package ru.vladshi.javalearning.tennisscoreboard.Entities.Scores;
 
 public enum Point {
     ZERO("0"),
@@ -10,5 +10,9 @@ public enum Point {
 
     Point(String value) {
         this.value = value;
+    }
+
+    public Point next() {
+        return values()[(this.ordinal() + 1)];
     }
 }

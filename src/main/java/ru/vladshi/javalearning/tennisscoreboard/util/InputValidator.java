@@ -12,8 +12,7 @@ public class InputValidator {
     public static int getValidPageNumber(HttpServletRequest req, int lastPageNumber) {
         String pageNumberStr = req.getParameter("page");
         int pageNumber;
-        if (pageNumberStr == null || pageNumberStr.isBlank()
-                || pageNumberStr.length() > 12 || !isPositiveNumber(pageNumberStr)) {
+        if (pageNumberStr == null || pageNumberStr.isBlank() || !isPositiveInteger(pageNumberStr)) {
             pageNumber = 1;
         } else {
             pageNumber = Integer.parseInt(pageNumberStr);
@@ -58,7 +57,13 @@ public class InputValidator {
         return "";
     }
 
-    private static boolean isPositiveNumber(String string) {
-        return string.matches("\\d+");
+    public static boolean isPositiveInteger(String string) {
+        try {
+            if (Integer.parseInt(string) > 0) {
+                return true;
+            }
+        } catch (NumberFormatException e) {
+        }
+        return false;
     }
 }

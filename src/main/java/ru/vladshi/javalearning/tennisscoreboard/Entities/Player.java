@@ -36,4 +36,19 @@ public class Player {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player player)) return false;
+
+        return id == player.id && name.equals(player.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + name.hashCode();
+        return result;
+    }
 }
