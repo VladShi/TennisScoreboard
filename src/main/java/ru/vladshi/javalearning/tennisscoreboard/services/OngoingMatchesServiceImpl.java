@@ -35,4 +35,10 @@ public enum OngoingMatchesServiceImpl implements OngoingMatchesService {
         UUID uuid = UUID.fromString(uuidString);
         return Optional.ofNullable(ongoingMatches.get(uuid));
     }
+
+    @Override
+    public void deleteMatchScore(String uuidString) {
+        UUID uuid = UUID.fromString(uuidString);
+        ongoingMatches.remove(uuid);
+    }
 }

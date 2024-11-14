@@ -4,6 +4,7 @@ import ru.vladshi.javalearning.tennisscoreboard.Entities.Player;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class MatchScore extends ScoreHolder {
 
@@ -26,5 +27,12 @@ public class MatchScore extends ScoreHolder {
 
     public GameScore getGame() {
         return sets.getLast().games.getLast();
+    }
+
+    public Optional<Player> getWinner() {
+        if (!isFinished) {
+            return Optional.empty();
+        }
+        return playerOneScore > playerTwoScore ? Optional.of(playerOne) : Optional.of(playerTwo);
     }
 }

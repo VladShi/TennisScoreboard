@@ -6,10 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.MatchScore;
-import ru.vladshi.javalearning.tennisscoreboard.services.MatchScoreCalculationService;
-import ru.vladshi.javalearning.tennisscoreboard.services.MatchScoreCalculationServiceImpl;
-import ru.vladshi.javalearning.tennisscoreboard.services.OngoingMatchesService;
-import ru.vladshi.javalearning.tennisscoreboard.services.OngoingMatchesServiceImpl;
+import ru.vladshi.javalearning.tennisscoreboard.services.*;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,6 +16,8 @@ public class MatchScoreServlet extends HttpServlet {
 
     private final OngoingMatchesService ongoingMatchesService = OngoingMatchesServiceImpl.INSTANCE;
     private final MatchScoreCalculationService matchScoreCalculationService = MatchScoreCalculationServiceImpl.INSTANCE;
+    private final FinishedMatchesPersistenceService finishedMatchesPersistenceService =
+            FinishedMatchesPersistenceServiceImpl.INSTANCE;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -37,7 +36,8 @@ public class MatchScoreServlet extends HttpServlet {
             MatchScore matchScore =
                     matchScoreCalculationService.addPointToPlayer(matchScoreOptional.get(), playerOrdinal);
             if (matchScore.isFinished) {
-                // TODO удалить матч из коллекции и записать его в бд через FinishedMatchesPersistenceService
+                ongoingMatchesService.deleteMatchScore(matchUuid);
+                finishedMatchesPersistenceService.save(matchScore);
             }
         }
         req.getSession().setAttribute("matchScore", matchScoreOptional);

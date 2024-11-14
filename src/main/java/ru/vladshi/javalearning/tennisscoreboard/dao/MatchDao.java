@@ -9,4 +9,6 @@ public interface MatchDao {
     List<Match> findAllByFilter(String name, int from, int pageSize);
 
     long countByFilter(String name);
+
+    void save(Match match);
 }

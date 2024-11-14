@@ -15,6 +15,8 @@ public enum MatchDaoImpl implements MatchDao {
 
     private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
+
+
     @Override
     public List<Match> findAllByFilter(String filter, int from, int maxPageSize) {
         try (Session session = sessionFactory.openSession()) {
@@ -53,6 +55,18 @@ public enum MatchDaoImpl implements MatchDao {
             countQuery.select(builder.countDistinct(fromMatch.get("id"))).where(nameIsPresentInMatch);
 
             return session.createQuery(countQuery).getSingleResult();
+
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error when working with a database", e);
+        }
+    }
+
+    @Override
+    public void save(Match match) {
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            session.persist(match);
 
         } catch (HibernateException e) {
             e.printStackTrace();

@@ -10,4 +10,6 @@ public interface OngoingMatchesService {
     UUID addNewMatchScore(String playerOneName, String playerTwoName);
 
     Optional<MatchScore> getMatchScore(String uuidString);
+
+    void deleteMatchScore(String uuidString);
 }
