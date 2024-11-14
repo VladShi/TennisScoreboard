@@ -191,8 +191,8 @@ public class MatchScoreCalculationServiceTest {
 
         fillMatchScoreExpected(PLAYER_ONE, NUMBER_OF_SETS_TO_WIN_MATCH, 6, Point.FORTY);
         fillMatchScoreExpected(PLAYER_TWO, 0, 3, Point.ZERO);
-        matchScoreExpected.sets.getLast().games.getLast().isFinished = true;
-        matchScoreExpected.sets.getLast().isFinished = true;
+        matchScoreExpected.getGame().isFinished = true;
+        matchScoreExpected.getSet().isFinished = true;
         matchScoreExpected.isFinished = true;
 
         assertMatchScoreEquals(matchScoreExpected, result);
@@ -209,11 +209,11 @@ public class MatchScoreCalculationServiceTest {
 
         fillMatchScoreExpected(PLAYER_ONE, 0, 6, Point.FORTY);
         fillMatchScoreExpected(PLAYER_TWO, 0, 6, Point.ZERO);
-        matchScoreExpected.sets.getLast().games.getLast().isFinished = true;
-        matchScoreExpected.sets.getLast().hasTiebreak = true;
-        matchScoreExpected.sets.getLast().tiebreak = new TiebreakScore();
+        matchScoreExpected.getGame().isFinished = true;
+        matchScoreExpected.getSet().hasTiebreak = true;
+        matchScoreExpected.getSet().tiebreak = new TiebreakScore();
 
-        assertNotNull(result.sets.getLast().tiebreak, "The set should have tiebreak");
+        assertNotNull(result.getSet().tiebreak, "The set should have tiebreak");
         assertTiebreakScoreEquals(matchScoreExpected, result);
     }
 
@@ -317,9 +317,9 @@ public class MatchScoreCalculationServiceTest {
 
         fillTiebreakScoreExpected(PLAYER_ONE, NUMBER_OF_SETS_TO_WIN_MATCH, 7, NUMBER_OF_POINTS_TO_WIN_TIEBREAK);
         fillTiebreakScoreExpected(PLAYER_TWO, 0, 6, 0);
-        matchScoreExpected.sets.getLast().games.getLast().isFinished = true;
-        matchScoreExpected.sets.getLast().tiebreak.isFinished = true;
-        matchScoreExpected.sets.getLast().isFinished = true;
+        matchScoreExpected.getGame().isFinished = true;
+        matchScoreExpected.getSet().tiebreak.isFinished = true;
+        matchScoreExpected.getSet().isFinished = true;
         matchScoreExpected.isFinished = true;
 
         assertTiebreakScoreEquals(matchScoreExpected, result);
@@ -327,8 +327,8 @@ public class MatchScoreCalculationServiceTest {
 
     private void fillScore(MatchScore matchScore, PlayerOrdinal playerOrdinal, int set, int game, Point point) {
         matchScore.setScore(playerOrdinal, set);
-        matchScore.sets.getLast().setScore(playerOrdinal, game);
-        matchScore.sets.getLast().games.getLast().setScore(playerOrdinal, point);
+        matchScore.getSet().setScore(playerOrdinal, game);
+        matchScore.getGame().setScore(playerOrdinal, point);
     }
 
     private void fillMatchScore(PlayerOrdinal playerOrdinal, int set, int game, Point point) {
@@ -342,12 +342,12 @@ public class MatchScoreCalculationServiceTest {
     private void fillTiebreakScore(
             MatchScore matchScore, PlayerOrdinal playerOrdinal, int set, int game, int tiebreakPoint) {
         fillScore(matchScore, playerOrdinal, set, game, Point.ZERO);
-        matchScore.sets.getLast().games.getLast().isFinished = true;
-        if (!matchScore.sets.getLast().hasTiebreak) {
-            matchScore.sets.getLast().tiebreak = new TiebreakScore();
-            matchScore.sets.getLast().hasTiebreak = true;
+        matchScore.getGame().isFinished = true;
+        if (!matchScore.getSet().hasTiebreak) {
+            matchScore.getSet().tiebreak = new TiebreakScore();
+            matchScore.getSet().hasTiebreak = true;
         }
-        matchScore.sets.getLast().tiebreak.setScore(playerOrdinal, tiebreakPoint);
+        matchScore.getSet().tiebreak.setScore(playerOrdinal, tiebreakPoint);
     }
 
     private void fillTiebreakScore(PlayerOrdinal playerOrdinal, int set, int game, int tiebreakPoint) {
@@ -359,41 +359,37 @@ public class MatchScoreCalculationServiceTest {
     }
 
     private static void assertMatchScoreEquals(MatchScore expected, MatchScore actual) {
-        GameScore expectedGame = expected.sets.getLast().games.getLast();
-        GameScore actualGame = actual.sets.getLast().games.getLast();
-        SetScore expectedSet = expected.sets.getLast();
-        SetScore actualSet = actual.sets.getLast();
         assertAll("Check that the actual match score is equal to the expected match score in sets, games and points.",
                 () -> assertEquals(expected.getScore(PLAYER_ONE),
                         actual.getScore(PLAYER_ONE),
                         "Player One set score is not equal to the expected."),
-                () -> assertEquals(expectedSet.getScore(PLAYER_ONE),
-                        actualSet.getScore(PLAYER_ONE),
+                () -> assertEquals(expected.getSet().getScore(PLAYER_ONE),
+                        actual.getSet().getScore(PLAYER_ONE),
                         "Player One game score is not equal to the expected."),
-                () -> assertEquals(expectedGame.getScore(PLAYER_ONE),
-                        actualGame.getScore(PLAYER_ONE),
+                () -> assertEquals(expected.getGame().getScore(PLAYER_ONE),
+                        actual.getGame().getScore(PLAYER_ONE),
                         "Player One point score is not equal to the expected."),
                 () -> assertEquals(expected.getScore(PLAYER_TWO),
                         actual.getScore(PLAYER_TWO),
                         "Player Two set score is not equal to the expected."),
-                () -> assertEquals(expectedSet.getScore(PLAYER_TWO),
-                        actualSet.getScore(PLAYER_TWO),
+                () -> assertEquals(expected.getSet().getScore(PLAYER_TWO),
+                        actual.getSet().getScore(PLAYER_TWO),
                         "Player Two game score is not equal to the expected."),
-                () -> assertEquals(expectedGame.getScore(PLAYER_TWO),
-                        actualGame.getScore(PLAYER_TWO),
+                () -> assertEquals(expected.getGame().getScore(PLAYER_TWO),
+                        actual.getGame().getScore(PLAYER_TWO),
                         "Player Two point score is not equal to the expected."),
 
                 () -> assertEquals(expected.isFinished,
                         actual.isFinished,
                         "Match finished status is not equal to the expected"),
-                () -> assertEquals(expectedSet.isFinished,
-                        actualSet.isFinished,
+                () -> assertEquals(expected.getSet().isFinished,
+                        actual.getSet().isFinished,
                         "Set finished status is not equal to the expected"),
-                () -> assertEquals(expectedSet.hasTiebreak,
-                        actualSet.hasTiebreak,
+                () -> assertEquals(expected.getSet().hasTiebreak,
+                        actual.getSet().hasTiebreak,
                         "Set tiebreak status is not equal to the expected"),
-                () -> assertEquals(expectedGame.isFinished,
-                        actualGame.isFinished,
+                () -> assertEquals(expected.getGame().isFinished,
+                        actual.getGame().isFinished,
                         "Game finished status is not equal to the expected")
         );
     }
@@ -401,14 +397,14 @@ public class MatchScoreCalculationServiceTest {
     private static void assertTiebreakScoreEquals(MatchScore expected, MatchScore actual) {
         assertMatchScoreEquals(expected, actual);
         assertAll("Check that the actual match score is equal to the expected match score in tiebreak",
-                () -> assertEquals(expected.sets.getLast().tiebreak.isFinished,
-                        actual.sets.getLast().tiebreak.isFinished,
+                () -> assertEquals(expected.getSet().tiebreak.isFinished,
+                        actual.getSet().tiebreak.isFinished,
                         "Tiebreak finished status is not equal to the expected"),
-                () -> assertEquals(expected.sets.getLast().tiebreak.getScore(PLAYER_ONE),
-                        actual.sets.getLast().tiebreak.getScore(PLAYER_ONE),
+                () -> assertEquals(expected.getSet().tiebreak.getScore(PLAYER_ONE),
+                        actual.getSet().tiebreak.getScore(PLAYER_ONE),
                         "Player One tiebreak score is not equal to the expected"),
-                () -> assertEquals(expected.sets.getLast().tiebreak.getScore(PLAYER_TWO),
-                        actual.sets.getLast().tiebreak.getScore(PLAYER_TWO),
+                () -> assertEquals(expected.getSet().tiebreak.getScore(PLAYER_TWO),
+                        actual.getSet().tiebreak.getScore(PLAYER_TWO),
                         "Player Two tiebreak score is not equal to the expected")
         );
     }
@@ -417,15 +413,15 @@ public class MatchScoreCalculationServiceTest {
         while (matchScore.sets.size() > 1) {
             matchScore.sets.removeFirst();
         }
-        while (matchScore.sets.getLast().games.size() > 1) {
-            matchScore.sets.getLast().games.removeFirst();
+        while (matchScore.getSet().games.size() > 1) {
+            matchScore.getSet().games.removeFirst();
         }
         fillMatchScore(PLAYER_ONE, 0,0, Point.ZERO);
         fillMatchScore(PLAYER_TWO, 0,0, Point.ZERO);
         matchScore.isFinished = false;
-        matchScore.sets.getLast().hasTiebreak = false;
-        matchScore.sets.getLast().tiebreak = null;
-        matchScore.sets.getLast().isFinished = false;
-        matchScore.sets.getLast().games.getLast().isFinished = false;
+        matchScore.getSet().hasTiebreak = false;
+        matchScore.getSet().tiebreak = null;
+        matchScore.getSet().isFinished = false;
+        matchScore.getGame().isFinished = false;
     }
 }

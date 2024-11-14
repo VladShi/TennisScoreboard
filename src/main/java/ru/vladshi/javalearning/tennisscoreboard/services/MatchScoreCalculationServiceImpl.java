@@ -2,98 +2,108 @@ package ru.vladshi.javalearning.tennisscoreboard.services;
 
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.*;
 
+import static ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.Point.*;
+
 public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationService {
 
     INSTANCE;
 
     private static final int NUMBER_OF_SETS_TO_WIN_MATCH = 2;
+    private static final int NUMBER_OF_POINTS_TO_WIN_TIEBREAK = 7;
+    private static final int NUMBER_OF_GAMES_TO_WIN_SET = 6;
 
     @Override
-    public MatchScore addPointToPlayer(MatchScore matchScore, String playerOrdinal) {
-        if (!isPlayerOrdinalValid(playerOrdinal) || matchScore == null || matchScore.isFinished) {  // TODO проверка isFinished добавить
-            return matchScore;
+    public MatchScore addPointToPlayer(MatchScore match, String playerOrdinal) {
+        if (!isPlayerOrdinalValid(playerOrdinal) || match == null || match.isFinished) {
+            return match;
         }
-        PlayerOrdinal pointWinner = getPointWinner(playerOrdinal);  // TODO scoredPlayer
-        PlayerOrdinal pointLoser = getPointLoser(playerOrdinal);  // TODO loserPlayer
-        SetScore currentSet = matchScore.sets.getLast();
-        GameScore currentGame = currentSet.games.getLast();
+        PlayerOrdinal scoredPlayer = getScoredPlayer(playerOrdinal);
+        PlayerOrdinal loserPlayer = getLoserPlayer(playerOrdinal);
+        SetScore currentSet = match.getSet();
+        GameScore currentGame = match.getGame();
 
-        if (currentSet.hasTiebreak && !currentSet.tiebreak.isFinished) {
-            TiebreakScore tiebreak = currentSet.tiebreak;
-            calculateTiebreak(tiebreak, pointWinner, pointLoser);
-            if (!currentSet.tiebreak.isFinished) {
-                return matchScore;
+        if (!currentSet.hasTiebreak) {
+
+            proceedGame(currentGame, scoredPlayer, loserPlayer);
+            if (!currentGame.isFinished) {
+                return match;
             }
-            currentSet.setScore(pointWinner, currentSet.getScore(pointWinner) + 1);
+
+            proceedSet(currentSet, scoredPlayer, loserPlayer);
+            if (!currentSet.isFinished) {
+                return match;
+            }
+
+        } else {  // current set has tiebreak
+            TiebreakScore tiebreak = currentSet.tiebreak;
+            proceedTiebreak(tiebreak, scoredPlayer, loserPlayer);
+            if (!tiebreak.isFinished) {
+                return match;
+            }
+            currentSet.increaseScore(scoredPlayer);
             currentSet.isFinished = true;
-            calculateInMatchScore(matchScore, pointWinner);  // TODO возможно стоит проверять что тайбрейка нет и внутри этого условия выполнить два метода для гейма и сета
-            return matchScore;                               //  потом в блоке элсе выполнить прогонку тайбрейка и после закрытия элс сделать прогонку для матча, один раз, и не будет два как сейчас? DRY
         }
 
-        calculateInGameScore(currentGame, pointWinner, pointLoser);  // TODO proceedGame
-        if (!currentGame.isFinished) {
-            return matchScore;
+        match.increaseScore(scoredPlayer);
+        int setsOfScorer = match.getScore(scoredPlayer);
+        if (setsOfScorer == NUMBER_OF_SETS_TO_WIN_MATCH) {
+            match.isFinished = true;
+        } else {
+            startNextSetIn(match);
         }
-
-        calculateInSetScore(currentSet, pointWinner, pointLoser);  // TODO proceedSet
-        if (!currentSet.isFinished) {
-            return matchScore;
-        }
-
-        calculateInMatchScore(matchScore, pointWinner);  // TODO proceedMatch
-        return matchScore;
+        return match;
     }
 
-    private void calculateTiebreak(TiebreakScore tiebreak, PlayerOrdinal pointWinner, PlayerOrdinal pointLoser) {
-        int pointWinnerScore = tiebreak.getScore(pointWinner);
-        int pointLoserScore = tiebreak.getScore(pointLoser);
-        boolean willTiebreakBeFinished = pointWinnerScore >= 6 && (pointWinnerScore - pointLoserScore) >= 1;
-        if (willTiebreakBeFinished) {
+    private void proceedTiebreak(TiebreakScore tiebreak, PlayerOrdinal scoredPlayer, PlayerOrdinal loserPlayer) {
+        tiebreak.increaseScore(scoredPlayer);
+
+        int pointsOfScorer = tiebreak.getScore(scoredPlayer);
+        int pointsOfLoser = tiebreak.getScore(loserPlayer);
+        int differenceInScore = pointsOfScorer - pointsOfLoser;
+
+        boolean isTiebreakFinished = pointsOfScorer >= NUMBER_OF_POINTS_TO_WIN_TIEBREAK && differenceInScore >= 2;
+
+        if (isTiebreakFinished) {
             tiebreak.isFinished = true;
         }
-        tiebreak.setScore(pointWinner, pointWinnerScore + 1);  // TODO сначала прибавить а потом сравнивать с константой вместо магических чисел и тогда will можно заменить на is
     }
 
-    private void calculateInGameScore(GameScore game, PlayerOrdinal pointWinner, PlayerOrdinal pointLoser) {
-        Point pointWinnerScore = game.getScore(pointWinner);  // TODO pointsOfScorer
-        Point pointLoserScore = game.getScore(pointLoser);  // TODO pointsOfLoser
-        boolean willGameBeFinished = pointWinnerScore == Point.AD
-                || (pointWinnerScore == Point.FORTY && pointLoserScore.ordinal() < Point.FORTY.ordinal());
+    private void proceedGame(GameScore game, PlayerOrdinal scoredPlayer, PlayerOrdinal pointLoser) {
+        Point pointsOfScorer = game.getScore(scoredPlayer);
+        Point pointsOfLoser = game.getScore(pointLoser);
+
+        boolean hasScoredPlayerAdvantage = pointsOfScorer == AD;
+        boolean hasScoredPlayer_40 = pointsOfScorer == FORTY;
+        boolean hasLoserPlayerLessThan_40 = pointsOfLoser.ordinal() < FORTY.ordinal();
+
+        boolean willGameBeFinished = hasScoredPlayerAdvantage || (hasScoredPlayer_40 && hasLoserPlayerLessThan_40);
+
         if (willGameBeFinished) {
             game.isFinished = true;
-        } else if (pointLoserScore == Point.AD) {
-            game.setScore(pointLoser, Point.FORTY);
+        } else if (pointsOfLoser == AD) {
+            game.setScore(pointLoser, FORTY);
         } else {
-            game.setScore(pointWinner, pointWinnerScore.next());  // TODO в Гейме НЕ получится сначала прибавить а потом сравнивать с константой вместо магических чисел
+            game.increaseScore(scoredPlayer);
         }
     }
-    // TODO посмотреть какие ещё условия можно вынести с осмысленным названием
-    private void calculateInSetScore(SetScore set, PlayerOrdinal pointWinner, PlayerOrdinal pointLoser) {
-        int gameWinnerScore = set.getScore(pointWinner);   // TODO gamesOfScorer
-        int gameLoserScore = set.getScore(pointLoser);  // TODO gamesOfLoser
-//        boolean willSetBeFinished = (gameWinnerScore == 5 && gameLoserScore < 5)
-//                || (gameWinnerScore == 6 && gameLoserScore == 5);
-        boolean willSetBeFinished = (gameWinnerScore >= 5 && (gameWinnerScore - gameLoserScore) >= 1);
-        if (willSetBeFinished) {
+
+    private void proceedSet(SetScore set, PlayerOrdinal scoredPlayer, PlayerOrdinal pointLoser) {
+        set.increaseScore(scoredPlayer);
+
+        int gamesOfScorer = set.getScore(scoredPlayer);
+        int gamesOfLoser = set.getScore(pointLoser);
+        int differenceInScore = gamesOfScorer - gamesOfLoser;
+
+        boolean isSetFinished = gamesOfScorer >= NUMBER_OF_GAMES_TO_WIN_SET && differenceInScore >= 2;
+
+        if (isSetFinished) {
             set.isFinished = true;
-        } else if (gameWinnerScore == 5 && gameLoserScore == 6) {
+        } else if (gamesOfScorer == NUMBER_OF_GAMES_TO_WIN_SET && gamesOfLoser == NUMBER_OF_GAMES_TO_WIN_SET) {
             set.hasTiebreak = true;
             set.tiebreak = new TiebreakScore();
         } else {
-            set.games.add(new GameScore());
+            startNextGameIn(set);
         }
-        set.setScore(pointWinner, gameWinnerScore + 1);  // TODO сначала прибавить а потом сравнивать с константой вместо магических чисел и тогда will можно заменить на is
-    }
-
-    private void calculateInMatchScore(MatchScore matchScore, PlayerOrdinal pointWinner) {
-        int setWinnerScore = matchScore.getScore(pointWinner);  // TODO setsOfScorer
-        boolean willMatchBeFinished = setWinnerScore == NUMBER_OF_SETS_TO_WIN_MATCH - 1;
-        if (willMatchBeFinished) {
-            matchScore.isFinished = true;
-        } else {
-            matchScore.sets.add(new SetScore());
-        }
-        matchScore.setScore(pointWinner, setWinnerScore + 1);  // TODO сначала прибавить а потом сравнивать с константой вместо магических чисел и тогда will можно заменить на is
     }
 
     private boolean isPlayerOrdinalValid(String playerOrdinal) {
@@ -103,13 +113,21 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
                 && (playerOrdinal.equals(playerOneOrdinal) || playerOrdinal.equals(playerTwoOrdinal));
     }
 
-    private PlayerOrdinal getPointWinner(String playerOrdinal) {  // TODO getScoredPlayer
+    private PlayerOrdinal getScoredPlayer(String playerOrdinal) {
         String playerOneOrdinal = PlayerOrdinal.PLAYER_ONE.toString();
         return playerOrdinal.equals(playerOneOrdinal) ? PlayerOrdinal.PLAYER_ONE : PlayerOrdinal.PLAYER_TWO;
     }
 
-    private PlayerOrdinal getPointLoser(String playerOrdinal) {  // TODO getLoserPlayer
+    private PlayerOrdinal getLoserPlayer(String playerOrdinal) {
         String playerOneOrdinal = PlayerOrdinal.PLAYER_ONE.toString();
         return playerOrdinal.equals(playerOneOrdinal) ? PlayerOrdinal.PLAYER_TWO : PlayerOrdinal.PLAYER_ONE;
+    }
+
+    private static void startNextGameIn(SetScore set) {
+        set.games.add(new GameScore());
+    }
+
+    private static void startNextSetIn(MatchScore match) {
+        match.sets.add(new SetScore());
     }
 }

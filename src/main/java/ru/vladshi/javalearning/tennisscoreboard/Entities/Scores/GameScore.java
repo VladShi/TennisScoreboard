@@ -21,4 +21,12 @@ public class GameScore {
             default -> throw new IllegalStateException("Invalid player ordinal: " + playerOrdinal);
         }
     }
+
+    public void increaseScore(PlayerOrdinal playerOrdinal) {
+        switch (playerOrdinal) {
+            case PLAYER_ONE -> playerOneScore = playerOneScore.next();
+            case PLAYER_TWO -> playerTwoScore = playerTwoScore.next();
+            default -> throw new IllegalStateException("Invalid player ordinal: " + playerOrdinal);
+        }
+    }
 }
