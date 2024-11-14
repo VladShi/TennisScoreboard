@@ -28,7 +28,7 @@ public enum MatchDaoImpl implements MatchDao {
             fromMatch.fetch("playerTwo", JoinType.LEFT);
 
             Predicate nameIsPresentInMatch = buildFilterByStringPredicate(builder, fromMatch, filter);
-            criteriaQuery.select(fromMatch).where(nameIsPresentInMatch);
+            criteriaQuery.select(fromMatch).where(nameIsPresentInMatch).orderBy(builder.desc(fromMatch.get("id")));
 
             return session.createQuery(criteriaQuery)
                             .setFirstResult(from)
