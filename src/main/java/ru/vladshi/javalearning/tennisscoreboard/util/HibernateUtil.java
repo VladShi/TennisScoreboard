@@ -7,6 +7,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Match;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Player;
+import ru.vladshi.javalearning.tennisscoreboard.exceptions.DatabaseException;
 
 import java.net.URL;
 
@@ -36,11 +37,10 @@ public class HibernateUtil {
 
             } catch (Exception e) {
                 // Log the exception or handle it based on your application's needs
-                e.printStackTrace();
                 if (registry != null) {
                     StandardServiceRegistryBuilder.destroy(registry);
                 }
-                throw new RuntimeException("Failed to initialize Hibernate SessionFactory", e);
+                throw new DatabaseException("Failed to initialize Hibernate SessionFactory");
             }
         }
         return sessionFactory;

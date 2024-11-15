@@ -5,6 +5,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Player;
+import ru.vladshi.javalearning.tennisscoreboard.exceptions.DatabaseException;
 import ru.vladshi.javalearning.tennisscoreboard.util.HibernateUtil;
 
 import java.util.Optional;
@@ -24,8 +25,7 @@ public enum PlayerDaoImpl implements PlayerDao {
                     .uniqueResultOptional();
 
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 
@@ -38,8 +38,7 @@ public enum PlayerDaoImpl implements PlayerDao {
             return player;
 
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 }

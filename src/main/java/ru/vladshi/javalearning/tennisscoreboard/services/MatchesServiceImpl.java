@@ -4,7 +4,6 @@ import ru.vladshi.javalearning.tennisscoreboard.Entities.Match;
 import ru.vladshi.javalearning.tennisscoreboard.dao.MatchDao;
 import ru.vladshi.javalearning.tennisscoreboard.dao.MatchDaoImpl;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public enum MatchesServiceImpl implements MatchesService {

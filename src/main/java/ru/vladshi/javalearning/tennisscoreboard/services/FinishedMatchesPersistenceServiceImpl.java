@@ -8,6 +8,7 @@ import ru.vladshi.javalearning.tennisscoreboard.Entities.Player;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.MatchScore;
 import ru.vladshi.javalearning.tennisscoreboard.dao.MatchDao;
 import ru.vladshi.javalearning.tennisscoreboard.dao.MatchDaoImpl;
+import ru.vladshi.javalearning.tennisscoreboard.exceptions.DatabaseException;
 import ru.vladshi.javalearning.tennisscoreboard.util.HibernateUtil;
 
 public enum FinishedMatchesPersistenceServiceImpl implements FinishedMatchesPersistenceService {
@@ -29,8 +30,7 @@ public enum FinishedMatchesPersistenceServiceImpl implements FinishedMatchesPers
 
             session.getTransaction().commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw  new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 }

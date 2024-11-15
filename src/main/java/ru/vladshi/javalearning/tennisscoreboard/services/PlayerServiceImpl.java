@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Player;
 import ru.vladshi.javalearning.tennisscoreboard.dao.PlayerDao;
 import ru.vladshi.javalearning.tennisscoreboard.dao.PlayerDaoImpl;
+import ru.vladshi.javalearning.tennisscoreboard.exceptions.DatabaseException;
 import ru.vladshi.javalearning.tennisscoreboard.util.HibernateUtil;
 
 import java.util.Optional;
@@ -29,8 +30,7 @@ public enum PlayerServiceImpl implements PlayerService {
             return player;
 
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw  new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 }

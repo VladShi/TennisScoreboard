@@ -5,6 +5,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import ru.vladshi.javalearning.tennisscoreboard.Entities.Match;
+import ru.vladshi.javalearning.tennisscoreboard.exceptions.DatabaseException;
 import ru.vladshi.javalearning.tennisscoreboard.util.HibernateUtil;
 
 import java.util.List;
@@ -36,8 +37,7 @@ public enum MatchDaoImpl implements MatchDao {
                             .getResultList();
 
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 
@@ -57,8 +57,7 @@ public enum MatchDaoImpl implements MatchDao {
             return session.createQuery(countQuery).getSingleResult();
 
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 
@@ -69,8 +68,7 @@ public enum MatchDaoImpl implements MatchDao {
             session.persist(match);
 
         } catch (HibernateException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error when working with a database", e);
+            throw new DatabaseException("Error when working with a database");
         }
     }
 
