@@ -24,19 +24,19 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
 
         if (!currentSet.hasTiebreak) {
 
-            proceedGame(currentGame, scoredPlayer, loserPlayer);
+            increaseGameScore(currentGame, scoredPlayer, loserPlayer);
             if (!currentGame.isFinished) {
                 return match;
             }
 
-            proceedSet(currentSet, scoredPlayer, loserPlayer);
+            increaseSetScore(currentSet, scoredPlayer, loserPlayer);
             if (!currentSet.isFinished) {
                 return match;
             }
 
-        } else {  // current set has tiebreak
+        } else {  // if current set has tiebreak
             TiebreakScore tiebreak = currentSet.tiebreak;
-            proceedTiebreak(tiebreak, scoredPlayer, loserPlayer);
+            increaseTiebreakScore(tiebreak, scoredPlayer, loserPlayer);
             if (!tiebreak.isFinished) {
                 return match;
             }
@@ -54,7 +54,7 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
         return match;
     }
 
-    private void proceedTiebreak(TiebreakScore tiebreak, PlayerOrdinal scoredPlayer, PlayerOrdinal loserPlayer) {
+    private void increaseTiebreakScore(TiebreakScore tiebreak, PlayerOrdinal scoredPlayer, PlayerOrdinal loserPlayer) {
         tiebreak.increaseScore(scoredPlayer);
 
         int pointsOfScorer = tiebreak.getScore(scoredPlayer);
@@ -68,7 +68,7 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
         }
     }
 
-    private void proceedGame(GameScore game, PlayerOrdinal scoredPlayer, PlayerOrdinal pointLoser) {
+    private void increaseGameScore(GameScore game, PlayerOrdinal scoredPlayer, PlayerOrdinal pointLoser) {
         Point pointsOfScorer = game.getScore(scoredPlayer);
         Point pointsOfLoser = game.getScore(pointLoser);
 
@@ -87,7 +87,7 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
         }
     }
 
-    private void proceedSet(SetScore set, PlayerOrdinal scoredPlayer, PlayerOrdinal pointLoser) {
+    private void increaseSetScore(SetScore set, PlayerOrdinal scoredPlayer, PlayerOrdinal pointLoser) {
         set.increaseScore(scoredPlayer);
 
         int gamesOfScorer = set.getScore(scoredPlayer);
