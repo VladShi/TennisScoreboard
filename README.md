@@ -2,11 +2,14 @@
 Проект “Табло теннисного матча” 
 -------------------------------
 
-Веб-приложение, реализующее табло счёта теннисного матча.
+Веб-приложение, реализующее табло счёта теннисного матча. \
+(Пет-проект написанный для освоения, закрепления навыков в Java)
 
 Оглавление
 ----------
 1. [Реализация](#реализация)
+    * [Общие комментарии](#общие-комментарии)
+    * [Требования и запуск приложения](#требования-и-запуск-приложения)
 2. [Техническое задание](#техническое-задание)
     *   [Что нужно знать](#что-нужно-знать)
     *   [Мотивация проекта](#мотивация-проекта)
@@ -28,6 +31,20 @@
 
 Реализация
 ----------
+<img src="./readme_assets/example-tennis-scoreboard.png"  alt="Пример табло"></img>
+
+### Общие комментарии
+Структура адресов проекта полностью соответствует указанной в [ТЗ](#техническое-задание). Все endpoint-ы функционируют. 
+База данных H2 заполнена некоторыми начальными данными.
+
+### Требования и запуск приложения
+Для работы приложения необходима Java версии 21+. \
+Поскольку приложение построено на сервлетах вам понадобится контейнер сервлетов, такой как Tomcat, jetty и т.п. \
+Необходимо собрать war файл из файлов проекта. Это можно сделать с помощью Maven, Ant. Многие IDE(например 
+IntelliJ IDEA, Eclipse) упрощают этот процесс. \
+С помощью Maven: запустить команду 'mvn package' в корневой папке проекта(на уровне с файлом pom.xml) для создания
+war файла (/target/CurrencyExchange-1.0.war). Затем передать war файл контейнеру сервлетов.
+В Tomcat есть графический интерфейс где можно указать путь до war файла.
 
 Техническое задание
 -------------------
@@ -41,8 +58,10 @@
 *   [Backend](https://htmltomd.com/java-backend-learning-course/technologies/backend/)
     *   Java Servlets, JSP
     *   HTTP - GET и POST запросы, формы
-*   [Базы данных](https://htmltomd.com/java-backend-learning-course/technologies/databases/) - SQL, Hibernate, H2 (in-memory SQL database)
-*   \[Опционально\] [Frontend](https://htmltomd.com/java-backend-learning-course/technologies/frontend/) - HTML/CSS, блочная вёрстка
+*   [Базы данных](https://htmltomd.com/java-backend-learning-course/technologies/databases/) - SQL, Hibernate, H2 
+(in-memory SQL database)
+*   \[Опционально\] [Frontend](https://htmltomd.com/java-backend-learning-course/technologies/frontend/) - HTML/CSS, 
+блочная вёрстка
 *   [Тесты](https://htmltomd.com/java-backend-learning-course/technologies/tests/) - юнит тестирование, JUnit 5
 *   [Деплой](https://htmltomd.com/java-backend-learning-course/technologies/dev-ops/#%d0%b4%d0%b5%d0%bf%d0%bb%d0%be%d0%b9) - облачный хостинг, командная строка Linux, Tomcat
 
