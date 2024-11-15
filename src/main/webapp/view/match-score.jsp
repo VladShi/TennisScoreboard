@@ -9,6 +9,7 @@
 <%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.MatchScore" %>
 <%@ page import="java.util.Optional" %>
 <%@ page import="static ru.vladshi.javalearning.tennisscoreboard.Entities.Scores.PlayerOrdinal.*" %>
+<%@ page import="ru.vladshi.javalearning.tennisscoreboard.Entities.Player" %>
 <%
     Optional<MatchScore> matchScoreOptional = (Optional<MatchScore>) session.getAttribute("matchScore");
 %>
@@ -49,53 +50,125 @@
         <h1>Current match</h1>
         <div class="current-match-image"></div>
         <section class="score">
+
             <% if (matchScoreOptional.isPresent()) {
                 MatchScore matchScore = matchScoreOptional.get();
-                boolean hasSetTiebreak = matchScore.sets.getLast().hasTiebreak;
+                boolean hasSetTiebreak = matchScore.getSet().hasTiebreak;
+                boolean isMatchFinished = matchScore.isFinished;
+                String highlight = "style=\"background-color: #e7e7e7\"";
+                Optional<Player> winner = matchScore.getWinner();
             %>
+
             <table class="table">
+
                 <thead class="result">
                 <tr>
-                    <th class="table-text">Player</th>
-                    <th class="table-text">Sets</th>
-                    <th class="table-text">Games</th>
-                    <th class="table-text" <% if(hasSetTiebreak) { %>style="background-color: #e7e7e7; font-weight: bold"<% } %> > <%= hasSetTiebreak ? "Tiebreak" : "Points" %></th>
+                    <th class="table-text">
+                        Player
+                    </th>
+                    <th class="table-text" <%= isMatchFinished ? highlight : "" %> >
+                        Sets
+                    </th>
+                    <th class="table-text">
+                        <%= isMatchFinished ? "Set 1" : "Games" %>
+                    </th>
+                    <th class="table-text" <%= hasSetTiebreak ? highlight : "" %>>
+                        <% if (isMatchFinished) { %>
+                            Set 2
+                        <% } else if (hasSetTiebreak) { %>
+                            <span style="font-weight: bold">Tiebreak</span>
+                        <% } else { %>
+                            Points
+                        <% } %>
+                    </th>
+                    <% if (isMatchFinished) { %>
+                    <th class=table-text>
+                        Set 3
+                    </th>
+                    <% } %>
                 </tr>
                 </thead>
+
                 <tbody>
+
                 <tr class="player1">
-                    <td class="table-text"><%= matchScore.playerOne.getName() %></td>
-                    <td class="table-text"><%= matchScore.getScore(PLAYER_ONE) %></td>
-                    <td class="table-text"><%= matchScore.sets.getLast().getScore(PLAYER_ONE) %></td>
-                    <td class="table-text" <% if(hasSetTiebreak) { %>style="background-color: #e7e7e7; font-weight: bold"<% } %>><%= hasSetTiebreak ?
-                            matchScore.sets.getLast().tiebreak.getScore(PLAYER_ONE)
-                            : matchScore.sets.getLast().games.getLast().getScore(PLAYER_ONE).value %></td>
+                    <td class="table-text" <% if (winner.isPresent() && winner.get() == matchScore.playerOne) { %>style="font-weight: bold"<% } %>>
+                        <%= matchScore.playerOne.getName() %>
+                    </td>
+                    <td class="table-text" <%= isMatchFinished ? highlight : "" %>>
+                        <%= matchScore.getScore(PLAYER_ONE) %>
+                    </td>
                     <td class="table-text">
-                        <form method="post" action="">
-                            <input hidden name="playerOrdinal" value="playerOne">
-                            <input class="score-btn" style="width:90%;" type="submit" value="Score">
-                        </form>
+                        <% if (isMatchFinished) { %>
+                            <%= matchScore.sets.get(0).getScore(PLAYER_ONE) %>
+                        <% } else { %>
+                            <%= matchScore.getSet().getScore(PLAYER_ONE) %>
+                        <% } %>
+                    </td>
+                    <td class="table-text" <%= hasSetTiebreak ? highlight : "" %>>
+                        <% if (isMatchFinished) { %>
+                            <%= matchScore.sets.get(1).getScore(PLAYER_ONE) %>
+                        <% } else if (hasSetTiebreak) { %>
+                            <%= matchScore.getSet().tiebreak.getScore(PLAYER_ONE) %>
+                        <% } else { %>
+                            <%= matchScore.getGame().getScore(PLAYER_ONE).value %>
+                        <% } %>
+                    </td>
+                    <td class="table-text">
+                        <% if (isMatchFinished) { %>
+                            <%= matchScore.sets.size() >= 3 ? matchScore.sets.get(2).getScore(PLAYER_ONE) : "" %>
+                        <% } else { %>
+                            <form method="post" action="">
+                                <input hidden name="playerOrdinal" value="playerOne">
+                                <input class="score-btn" style="width:90%;" type="submit" value="Score">
+                            </form>
+                        <% } %>
                     </td>
                 </tr>
+
                 <tr class="player2">
-                    <td class="table-text"><%= matchScore.playerTwo.getName() %></td>
-                    <td class="table-text"><%= matchScore.getScore(PLAYER_TWO) %></td>
-                    <td class="table-text"><%= matchScore.sets.getLast().getScore(PLAYER_TWO) %></td>
-                    <td class="table-text" <% if(hasSetTiebreak) { %>style="background-color: #e7e7e7; font-weight: bold"<% } %>><%= hasSetTiebreak ?
-                            matchScore.sets.getLast().tiebreak.getScore(PLAYER_TWO)
-                            : matchScore.sets.getLast().games.getLast().getScore(PLAYER_TWO).value %></td>
+                    <td class="table-text" <% if (winner.isPresent() && winner.get() == matchScore.playerTwo) { %>style="font-weight: bold"<% } %>>
+                        <%= matchScore.playerTwo.getName() %>
+                    </td>
+                    <td class="table-text" <%= isMatchFinished ? highlight : "" %>>
+                        <%= matchScore.getScore(PLAYER_TWO) %>
+                    </td>
                     <td class="table-text">
+                        <% if (isMatchFinished) { %>
+                        <%= matchScore.sets.get(0).getScore(PLAYER_TWO) %>
+                        <% } else { %>
+                        <%= matchScore.getSet().getScore(PLAYER_TWO) %>
+                        <% } %>
+                    </td>
+                    <td class="table-text" <%= hasSetTiebreak ? highlight : "" %>>
+                        <% if (isMatchFinished) { %>
+                        <%= matchScore.sets.get(1).getScore(PLAYER_TWO) %>
+                        <% } else if (hasSetTiebreak) { %>
+                        <%= matchScore.getSet().tiebreak.getScore(PLAYER_TWO) %>
+                        <% } else { %>
+                        <%= matchScore.getGame().getScore(PLAYER_TWO).value %>
+                        <% } %>
+                    </td>
+                    <td class="table-text">
+                        <% if (isMatchFinished) { %>
+                        <%= matchScore.sets.size() >= 3 ? matchScore.sets.get(2).getScore(PLAYER_TWO) : "" %>
+                        <% } else { %>
                         <form method="post" action="">
                             <input hidden name="playerOrdinal" value="playerTwo">
                             <input class="score-btn" style="width:90%;" type="submit" value="Score">
                         </form>
+                        <% } %>
                     </td>
                 </tr>
+
                 </tbody>
+
             </table>
+
             <% } else { %>
             <p style="color: red">Requested match was not found.</p>
             <% } %>
+
         </section>
     </div>
 </main>

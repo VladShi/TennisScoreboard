@@ -39,10 +39,10 @@ public class MatchScoreServlet extends HttpServlet {
                 ongoingMatchesService.deleteMatchScore(matchUuid);
                 finishedMatchesPersistenceService.save(matchScore);
             }
+            matchScoreOptional = Optional.of(matchScore);
         }
         req.getSession().setAttribute("matchScore", matchScoreOptional);
         req.getSession().setAttribute("uuid", matchUuid);
-        req.getRequestDispatcher("view/match-score.jsp").forward(req, resp); // TODO сделать отображение законченного матча.
-        // TODO ExceptionHandler надо бы ещё
+        req.getRequestDispatcher("view/match-score.jsp").forward(req, resp);
     }
 }
