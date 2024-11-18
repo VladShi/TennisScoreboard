@@ -31,6 +31,9 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
 
             increaseSetScore(currentSet, scoredPlayer, loserPlayer);
             if (!currentSet.isFinished) {
+                if (!currentSet.hasTiebreak) {
+                    startNextGameIn(currentSet);
+                }
                 return match;
             }
 
@@ -101,8 +104,6 @@ public enum MatchScoreCalculationServiceImpl implements MatchScoreCalculationSer
         } else if (gamesOfScorer == NUMBER_OF_GAMES_TO_WIN_SET && gamesOfLoser == NUMBER_OF_GAMES_TO_WIN_SET) {
             set.hasTiebreak = true;
             set.tiebreak = new TiebreakScore();
-        } else {
-            startNextGameIn(set);
         }
     }
 
